@@ -9,8 +9,8 @@ import zipfile
 import time
 
 st.set_page_config(
-    page_title="SplitCast",
-    page_icon="⚡",
+    page_title="SplitBoom",
+    page_icon="💥",
     layout="centered",
     initial_sidebar_state="collapsed",
 )
@@ -166,9 +166,9 @@ st.markdown("""
 # ==============================================================
 st.markdown("""
 <div class="glass-card" style="text-align:center; padding: 36px 28px;">
-  <div style="font-size:2.8rem; margin-bottom:8px;">⚡</div>
-  <div class="hero-title">SplitCast</div>
-  <div class="hero-subtitle">De la señal a la disponibilidad · Ordo · Lumen · Nexus · Ratio</div>
+  <div style="font-size:2.8rem; margin-bottom:8px;">💥</div>
+  <div class="hero-title">SplitBoom</div>
+  <div class="hero-subtitle">La capa de activación comercial · Del insight a la acción inmediata</div>
   <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-top: 15px;">
     Sube cualquier reporte general en Excel y el sistema lo segmentará automáticamente en archivos .txt individuales por cada tienda/sucursal. Todo el procesamiento se realiza en memoria sin dejar rastros locales.
   </div>
@@ -364,7 +364,7 @@ else:
 # ==============================================================
 st.markdown("""
 <div style="text-align:center; margin-top: 40px; color: #334155; font-size: 0.78rem;">
-    ⚡ SplitCast · Ecosistema digital de planning retail<br>
-    <span style="color:#7c3aed;">Powered by Streamlit + Pandas</span>
+    💥 SplitBoom · Capa de ejecución sobre planning<br>
+    <span style="color:#7c3aed;">Gretel Boom Ecosystem</span>
 </div>
 """, unsafe_allow_html=True)
