@@ -1,5 +1,5 @@
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
-from fastapi.responses import StreamingResponse, FileResponse
+from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
@@ -9,7 +9,6 @@ import traceback
 
 app = FastAPI(title="SplitBoom Backend")
 
-# Habilitar CORS por precaución
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -17,13 +16,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Montar los assets estáticos
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
-@app.get("/")
-async def read_index():
-    return FileResponse("static/index.html")
 
 @app.post("/api/split")
 async def split_data(
@@ -42,7 +34,6 @@ async def split_data(
         print(f"Error al leer excel: {traceback.format_exc()}")
         raise HTTPException(status_code=400, detail=f"Error leyendo archivo: {str(e)}")
 
-    # Validar columnas
     cols_req = [group_col, sku_col, qty_col]
     cols_faltantes = [c for c in cols_req if c not in df.columns]
     
@@ -52,18 +43,15 @@ async def split_data(
             detail=f"No se encontraron estas columnas en tu Excel: {', '.join(cols_faltantes)}. Verifica las cabeceras."
         )
 
-    # Limpiar
     df_clean = df.dropna(subset=[group_col, sku_col, qty_col]).copy()
     
-    # Procesar
     zip_buffer = io.BytesIO()
-    sep_real = "\t" # Por defecto tabular (podría ser configurable en el futuro)
+    sep_real = "\t"
 
     with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
         for group_val, grupo in df_clean.groupby(group_col):
             nombre_limpio = str(group_val).replace('/', '-').replace('\\', '-').strip()
             
-            # Castear a int si es numérico para quitar decimales como 1.0, de lo contrario dejar tal cual
             def clean_qty(val):
                 sval = str(val)
                 if sval.replace('.','',1).isdigit():
@@ -79,10 +67,12 @@ async def split_data(
 
     zip_buffer.seek(0)
     
-    # Nombre del archivo original para el zip
     original_name = file.filename.rsplit('.', 1)[0]
     headers = {
         'Content-Disposition': f'attachment; filename="Export_{original_name}.zip"'
     }
 
     return StreamingResponse(zip_buffer, media_type="application/zip", headers=headers)
+
+# Montaje de la carpeta estática para suplir root (index.html)
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
