@@ -20,6 +20,11 @@ st.set_page_config(
 # ==============================================================
 st.markdown("""
 <style>
+  /* 🔥 Ocultar barra superior, menú hamburguesa y marca de agua de Streamlit 🔥 */
+  #MainMenu {visibility: hidden;}
+  header {visibility: hidden;}
+  footer {visibility: hidden;}
+
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
   html, body, [class*="css"] {
