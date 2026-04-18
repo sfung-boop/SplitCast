@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SplitBoom</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variables de colores exactos de Notion */
+        :root {
+            --bg-color: #ffffff;
+            --text-main: #37352f;
+            --text-muted: #787774;
+            --border-color: #e9e9e7;
+            --hover-bg: #efefed;
+            --callout-bg: #f1f1ef;
+            --button-blue: #2383e2;
+            --button-blue-hover: #0077d4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            display: flex;
+            justify-content: center;
+            padding: 10vh 20px;
+        }
+
+        /* Contenedor central tipo documento */
+        .notion-container {
+            width: 100%;
+            max-width: 708px; /* El ancho exacto de una página de Notion */
+        }
+
+        /* Título con Emoji grande */
+        .page-header {
+            margin-bottom: 32px;
+        }
+        
+        .page-icon {
+            font-size: 78px;
+            margin-bottom: 16px;
+            line-height: 1.1;
+        }
+
+        .page-title {
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+            outline: none;
+            margin-bottom: 8px;
+        }
+
+        /* Bloque Callout (La cajita gris de información) */
+        .notion-callout {
+            display: flex;
+            padding: 16px 16px 16px 12px;
+            background-color: var(--callout-bg);
+            border-radius: 4px;
+            margin-bottom: 24px;
+        }
+
+        .callout-icon {
+            font-size: 20px;
+            margin-right: 12px;
+        }
+
+        .callout-text {
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        /* Zona de carga de archivos */
+        .upload-zone {
+            border: 1px dashed rgba(55, 53, 47, 0.16);
+            border-radius: 4px;
+            padding: 32px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 20ms ease-in 0s;
+            margin-bottom: 24px;
+        }
+
+        .upload-zone:hover {
+            background-color: rgba(55, 53, 47, 0.03);
+        }
+
+        .upload-zone p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Mapeo de columnas */
+        .mapping-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .notion-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        /* Modificado para ser input text en lugar de select estático, da flexibilidad total */
+        .notion-select {
+            width: 100%;
+            padding: 6px 8px;
+            font-size: 14px;
+            color: var(--text-main);
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            outline: none;
+            transition: background 0.1s ease;
+        }
+
+        .notion-select:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .notion-select:focus {
+            border-color: rgba(35, 131, 226, 0.5);
+            box-shadow: 0 0 0 2px rgba(35, 131, 226, 0.2);
+            background-color: var(--bg-color);
+        }
+
+        /* Botón estilo Notion */
+        .notion-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: white;
+            background-color: var(--button-blue);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.1s ease;
+            width: 100%;
+        }
+
+        .notion-btn:hover {
+            background-color: var(--button-blue-hover);
+        }
+
+        .notion-btn:disabled {
+            background-color: #88beec;
+            cursor: not-allowed;
+        }
+
+        /* Separador */
+        .notion-divider {
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 24px 0;
+        }
+
+        #errorMsg {
+            color: #eb5757;
+            font-size: 13px;
+            margin-top: 12px;
+            padding: 8px 12px;
+            background-color: #fce8e8;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="notion-container">
+        <header class="page-header">
+            <div class="page-icon">💥</div>
+            <h1 class="page-title">SplitBoom</h1>
+            <p style="color: var(--text-muted); font-size: 16px;">La capa de activación comercial.</p>
+        </header>
+
+        <div class="notion-callout">
+            <div class="callout-icon">💡</div>
+            <div class="callout-text">
+                Sube tu reporte maestro de Excel. El sistema identificará las zonas y generará un archivo <code>.txt</code> empaquetado para cada una, pasando de análisis a ejecución inmediata.
+            </div>
+        </div>
+
+        <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+            <div style="font-size: 24px;">📄</div>
+            <p id="fileNameDisplay"><strong>Haz clic aquí para subir</strong> o arrastra tu archivo Excel</p>
+            <p style="font-size: 12px; margin-top: 4px;">Solo archivos .xlsx o .xls</p>
+            <input type="file" id="fileInput" accept=".xlsx, .xls" style="display: none;">
+        </div>
+
+        <div class="notion-divider"></div>
+
+        <div class="mapping-section">
+            <div>
+                <label class="notion-label">Agrupar por (Columna)</label>
+                <input type="text" id="colGroup" class="notion-select" value="Tienda" placeholder="Ej: Tienda">
+            </div>
+            <div>
+                <label class="notion-label">Código (SKU)</label>
+                <input type="text" id="colSku" class="notion-select" value="SKU" placeholder="Ej: SKU">
+            </div>
+            <div>
+                <label class="notion-label">Cantidad</label>
+                <input type="text" id="colQty" class="notion-select" value="Cantidad" placeholder="Ej: Cantidad">
+            </div>
+        </div>
+
+        <button class="notion-btn" id="submitBtn">
+            Convertir y Generar ZIP
+        </button>
+        <div id="errorMsg"></div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        const submitBtn = document.getElementById('submitBtn');
+        const errorMsg = document.getElementById('errorMsg');
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                fileNameDisplay.innerHTML = `<strong style="color:var(--text-main);">${e.target.files[0].name}</strong> listo para procesar`;
+            }
+        });
+
+        submitBtn.addEventListener('click', async () => {
+            if (!fileInput.files.length) {
+                errorMsg.innerText = "Por favor selecciona un archivo Excel primero.";
+                errorMsg.style.display = "block";
+                return;
+            }
+            errorMsg.style.display = "none";
+            submitBtn.innerText = "Procesando en memoria...";
+            submitBtn.disabled = true;
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+            formData.append("group_col", document.getElementById("colGroup").value);
+            formData.append("sku_col", document.getElementById("colSku").value);
+            formData.append("qty_col", document.getElementById("colQty").value);
+
+            try {
+                // Hacer el llamado a FastAPI Backend
+                const response = await fetch("/api/split", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json();
+                    throw new Error(errData.detail || "Error desconocido del servidor");
+                }
+
+                // Convertir la respuesta a un Blob (Archivo) e iniciar descarga
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                
+                // Nombre por defecto si no viene de los headers
+                let filename = "SplitBoom_Export.zip";
+                
+                // Intentar extraer el nombre del header Content-Disposition
+                const disposition = response.headers.get('content-disposition');
+                if (disposition && disposition.indexOf('attachment') !== -1) {
+                    const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                    const matches = filenameRegex.exec(disposition);
+                    if (matches != null && matches[1]) { 
+                        filename = matches[1].replace(/['"]/g, '');
+                    }
+                }
+
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+                
+                fileInput.value = "";
+                fileNameDisplay.innerHTML = `<strong>Haz clic aquí para subir otro archivo</strong>`;
+                
+            } catch(e) {
+                errorMsg.innerText = "❌ " + e.message;
+                errorMsg.style.display = "block";
+            } finally {
+                submitBtn.innerText = "Convertir y Generar ZIP";
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
